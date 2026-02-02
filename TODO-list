@@ -1,0 +1,23 @@
+- Init le github
+- Refactoring sur tous les fichiers inutile
+- Version
+
+- Session par defaut
+- Exercice par defaut
+- Ecrire un python pour gaver la base (exercice, session, user) -> test
+
+- Reformater swagger (categorie)
+- Ecrire la doc README ...
+
+- Ajouter une liste de session dans utilisateur
+- Modifié uniquement (set, rep, weight)
+
+- Divise les fichiers (un js par form)
+
+- Update progres apres chaque session rentree
+
+
+
+- Ajout Modification (exercice, session)
+
+- Implementation mobile

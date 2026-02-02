@@ -1,0 +1,172 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Musculation",
+    "version": "1.0.1",
+    "description": "API CRUD complète pour Users, Workout Sessions, Exercises, ExerciseInSession, Nutrition et Progress"
+  },
+  "servers": [
+    { "url": "http://localhost:3000" }
+  ],
+  "tags": [
+    { "name": "User", "description": "Gestion des utilisateurs" },
+    { "name": "WorkoutSession", "description": "Gestion des séances de sport" },
+    { "name": "Exercise", "description": "Gestion des exercices" },
+    { "name": "ExerciseInSession", "description": "Exercices associés à une séance" },
+    { "name": "Nutrition", "description": "Gestion des entrées nutritionnelles" },
+    { "name": "Progress", "description": "Suivi de la progression physique" }
+  ],
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "email": { "type": "string" },
+          "username": { "type": "string" },
+          "password": { "type": "string" },
+          "gender": { "type": "string" },
+          "age": { "type": "integer" },
+          "height": { "type": "number" },
+          "weight": { "type": "number" },
+          "goal": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["email", "username", "password"]
+      },
+      "WorkoutSession": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "userId": { "type": "integer" },
+          "date": { "type": "string", "format": "date-time" },
+          "duration": { "type": "integer" },
+          "notes": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["userId", "duration"]
+      },
+      "Exercise": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "muscleGroup": { "type": "string" },
+          "description": { "type": "string" },
+          "imageUrl": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["name", "muscleGroup"]
+      },
+      "ExerciseInSession": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "sessionId": { "type": "integer" },
+          "exerciseId": { "type": "integer" },
+          "sets": { "type": "integer" },
+          "reps": { "type": "integer" },
+          "weight": { "type": "number" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["sessionId", "exerciseId"]
+      },
+      "NutritionEntry": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "userId": { "type": "integer" },
+          "date": { "type": "string", "format": "date-time" },
+          "mealType": { "type": "string" },
+          "calories": { "type": "integer" },
+          "protein": { "type": "number" },
+          "carbs": { "type": "number" },
+          "fat": { "type": "number" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["userId", "mealType", "calories", "protein", "carbs", "fat"]
+      },
+      "Progress": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "userId": { "type": "integer" },
+          "date": { "type": "string", "format": "date-time" },
+          "weight": { "type": "number" },
+          "bodyFat": { "type": "number" },
+          "muscleMass": { "type": "number" },
+          "photoUrl": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["userId"]
+      }
+    }
+  },
+  "paths": {
+    "/users": {
+      "get": { "tags": ["User"], "summary": "Lister tous les utilisateurs", "responses": { "200": { "description": "Liste des utilisateurs", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/User" } } } } } } },
+      "post": { "tags": ["User"], "summary": "Créer un utilisateur", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }, "responses": { "200": { "description": "Utilisateur créé" } } }
+    },
+    "/users/{id}": {
+      "get": { "tags": ["User"], "summary": "Lire un utilisateur par ID", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Utilisateur trouvé", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } } } },
+      "put": { "tags": ["User"], "summary": "Mettre à jour un utilisateur", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } }, "responses": { "200": { "description": "Utilisateur mis à jour" } } },
+      "delete": { "tags": ["User"], "summary": "Supprimer un utilisateur et toutes ses données associées", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Utilisateur supprimé avec ses sessions, exercices, nutrition et progressions" } } }
+    },
+    "/sessions": {
+      "get": { "tags": ["WorkoutSession"], "summary": "Lister toutes les séances", "responses": { "200": { "description": "Liste des séances", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/WorkoutSession" } } } } } } },
+      "post": { "tags": ["WorkoutSession"], "summary": "Créer une séance", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WorkoutSession" } } } }, "responses": { "200": { "description": "Séance créée" } } }
+    },
+    "/sessions/{id}": {
+      "get": { "tags": ["WorkoutSession"], "summary": "Lire une séance par ID", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Séance trouvée", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WorkoutSession" } } } } } },
+      "put": { "tags": ["WorkoutSession"], "summary": "Mettre à jour une séance", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WorkoutSession" } } } }, "responses": { "200": { "description": "Séance mise à jour" } } },
+      "delete": { "tags": ["WorkoutSession"], "summary": "Supprimer une séance et ses exercices associés", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Séance supprimée avec ses exercices" } } }
+    },
+    "/sessions/{id}/exercises": {
+      "get": { "tags": ["ExerciseInSession"], "summary": "Lister les exercices d’une séance", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Liste des exercices en séance", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExerciseInSession" } } } } } } }
+    },
+    "/exercises": {
+      "get": { "tags": ["Exercise"], "summary": "Lister tous les exercices", "responses": { "200": { "description": "Liste des exercices", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Exercise" } } } } } } },
+      "post": { "tags": ["Exercise"], "summary": "Créer un exercice", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Exercise" } } } }, "responses": { "200": { "description": "Exercice créé" } } }
+    },
+    "/exercises/{id}": {
+      "get": { "tags": ["Exercise"], "summary": "Lire un exercice par ID", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Exercice trouvé", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Exercise" } } } } } },
+      "put": { "tags": ["Exercise"], "summary": "Mettre à jour un exercice", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Exercise" } } } }, "responses": { "200": { "description": "Exercice mis à jour" } } },
+      "delete": { "tags": ["Exercise"], "summary": "Supprimer un exercice et ses liens dans les séances", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Exercice supprimé" } } }
+    },
+    "/exercise-in-session": {
+      "get": { "tags": ["ExerciseInSession"], "summary": "Lister tous les exercices en session", "responses": { "200": { "description": "Liste des exercices en session", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ExerciseInSession" } } } } } } },
+      "post": { "tags": ["ExerciseInSession"], "summary": "Ajouter un exercice à une session", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExerciseInSession" } } } }, "responses": { "200": { "description": "Exercice ajouté à la session" } } }
+    },
+    "/exercise-in-session/{id}": {
+      "get": { "tags": ["ExerciseInSession"], "summary": "Lire un exercice en session par ID", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Exercice en session trouvé", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExerciseInSession" } } } } } },
+      "put": { "tags": ["ExerciseInSession"], "summary": "Mettre à jour un exercice en session", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExerciseInSession" } } } }, "responses": { "200": { "description": "Exercice en session mis à jour" } } },
+      "delete": { "tags": ["ExerciseInSession"], "summary": "Supprimer un exercice en session", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Exercice en session supprimé" } } }
+    },
+    "/nutrition": {
+      "get": { "tags": ["Nutrition"], "summary": "Lister toutes les entrées nutritionnelles", "responses": { "200": { "description": "Liste nutritionnelle", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/NutritionEntry" } } } } } } },
+      "post": { "tags": ["Nutrition"], "summary": "Ajouter une entrée nutritionnelle", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NutritionEntry" } } } }, "responses": { "200": { "description": "Entrée nutritionnelle ajoutée" } } }
+    },
+    "/nutrition/{userId}": {
+      "get": { "tags": ["Nutrition"], "summary": "Lister les entrées nutritionnelles d’un utilisateur", "parameters": [{ "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Liste des entrées nutritionnelles de l’utilisateur", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/NutritionEntry" } } } } } } }
+    },
+    "/nutrition/{id}": {
+      "put": { "tags": ["Nutrition"], "summary": "Mettre à jour une entrée nutritionnelle", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NutritionEntry" } } } }, "responses": { "200": { "description": "Entrée nutritionnelle mise à jour" } } },
+      "delete": { "tags": ["Nutrition"], "summary": "Supprimer une entrée nutritionnelle", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Entrée nutritionnelle supprimée" } } }
+    },
+    "/progress": {
+      "get": { "tags": ["Progress"], "summary": "Lister toutes les progressions", "responses": { "200": { "description": "Liste des progressions", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Progress" } } } } } } },
+      "post": { "tags": ["Progress"], "summary": "Ajouter une progression", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Progress" } } } }, "responses": { "200": { "description": "Progression ajoutée" } } }
+    },
+    "/progress/{userId}": {
+      "get": { "tags": ["Progress"], "summary": "Lister les progressions d’un utilisateur", "parameters": [{ "name": "userId", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Liste des progressions de l’utilisateur", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Progress" } } } } } } }
+    },
+    "/progress/{id}": {
+      "put": { "tags": ["Progress"], "summary": "Mettre à jour une progression", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Progress" } } } }, "responses": { "200": { "description": "Progression mise à jour" } } },
+      "delete": { "tags": ["Progress"], "summary": "Supprimer une progression", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Progression supprimée" } } }
+    }
+  }
+}
